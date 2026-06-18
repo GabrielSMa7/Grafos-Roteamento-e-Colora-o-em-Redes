@@ -1,0 +1,4 @@
+ALGORITMO: Dijkstra
+JUSTIFICATIVA: Todos os pesos do grafo são positivos, então Dijkstra será mais eficiente nesse caso
+
+#INCOMPLETO
