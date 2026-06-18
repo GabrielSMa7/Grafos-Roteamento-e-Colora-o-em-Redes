@@ -1,0 +1,4 @@
+ALGORITMO: Bellman-Ford
+JUSTIFICATIVA: O grafo possui pesos negativos, portanto Bellman-Ford é o mais indicado
+
+#INCOMPLETO
