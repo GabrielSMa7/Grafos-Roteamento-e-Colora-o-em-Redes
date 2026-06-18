@@ -1,1 +1,56 @@
+def processar_grafo(arquivo_entrada, arquivo_saida):
+    with open(arquivo_entrada, "r") as arquivo:
+        linhas = arquivo.readlines()
 
+    num_vertices, num_arestas = linhas[0].split('\t')
+    num_vertices = int(num_vertices)
+    num_arestas = int(num_arestas)
+
+    origem, destino = linhas[1].split('\t')
+    origem = int(origem)
+    destino = int(destino)
+
+    arestas = []
+    possui_peso_negativo = False
+    
+    for i in range(2, num_arestas + 2):
+        linha = linhas[i]
+
+        u, v, peso = linha.split('\t')
+
+        u = int(u)
+        v = int(v)
+        peso = int(peso)
+        arestas.append((u, v, peso))
+
+        if peso < 0:
+            possui_peso_negativo = True
+
+    
+    if possui_peso_negativo:
+        algoritmo = "Bellman-Ford"
+        justificativa = "O grafo possui pesos negativos, portanto Bellman-Ford é o mais indicado"
+    else:
+        algoritmo = "Dijkstra"
+        justificativa = "Todos os pesos do grafo são positivos, então Dijkstra será mais eficiente nesse caso"
+
+    with open(arquivo_saida, "w") as arquivo:
+        arquivo.write(f"ALGORITMO: {algoritmo}\n")
+        arquivo.write(f"JUSTIFICATIVA: {justificativa}\n")
+
+
+processar_grafo(
+    "grafo_rede_p.txt",
+    "saida_parte1_p.txt"
+)
+
+processar_grafo(
+    "grafo_rede_m.txt",
+    "saida_parte1_m.txt"
+)
+
+# Fluxo do código até agora
+# Lê ambos os arquivos txt
+# Executa cada um
+# Analisa os pesos de cada e decide qual algoritmo se encaixa e pro qual motivo
+# Escreve essa analise nos respectivos arquivos de saída
