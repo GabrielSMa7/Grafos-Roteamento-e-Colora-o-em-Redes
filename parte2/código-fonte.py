@@ -1,3 +1,5 @@
+import os
+
 def Dsatur(grafo, num_vertice):
     cores = {v: None for v in grafo} #Atribui nenhuma cor em cada vertice do grafo
     grau = {v: len(grafo[v]) for v in grafo} #Quantidade de vizinhos no grafo
@@ -23,8 +25,46 @@ def Dsatur(grafo, num_vertice):
 
     num_cores = len(set(cores.values()))
     
+    cores = " ".join([f"{v}={cores[v]}" for v in sorted(cores.keys())])
     return num_cores, cores
 
+def backtracking(v, num_cores, cores, lista_adjacencia, num_vertices):
+    if v == num_vertices :
+        return True
+    for cor in range(1, num_cores + 1):
+        if eh_seguro(v, cor, cores, lista_adjacencia):
+            cores[v] = cor
+            if backtracking(v + 1, num_cores, cores, lista_adjacencia, num_vertices):
+                return True
+            cores[v] = 0
+    return False
+
+def colorir_grafo(lista_adjacencia, num_cores):
+    num_vertices = len(lista_adjacencia)
+    cores = [0] * num_vertices
+
+    if backtracking(0, num_cores, cores, lista_adjacencia, num_vertices):
+        return cores
+    else:
+        return None
+    
+def encontrar_num_cores(lista_adjacencia):
+    num_vertices = len(lista_adjacencia)
+    for num_cores in range(1, num_vertices + 1):
+        coloracao = colorir_grafo(lista_adjacencia, num_cores)
+        if coloracao is not None:
+            coloracao = " ".join([f"{i}={cor}" for i, cor in enumerate(coloracao)])
+            return num_cores, coloracao
+    return num_vertices, None
+
+def eh_seguro(v, cor, cores, lista_adjacencia):
+
+    for vizinho in lista_adjacencia[v]:
+
+        if cores[vizinho] == cor:
+            return False
+
+    return True
 
 def processar_grafo_parte2(arquivo_entrada, arquivo_saida):
     with open(arquivo_entrada, "r") as arquivo:
@@ -60,97 +100,14 @@ def processar_grafo_parte2(arquivo_entrada, arquivo_saida):
         algoritmo = "Backtracking"
         justificativa = "Como o grafo possui poucos vertices, o Backtracking garante o numero cromatico exato sem estourar o tempo."
         
-        #COLOCA O BACKTRACKING AQUI
-    def eh_seguro(v, cor, cores, lista_adjacencia):
-
-    for vizinho in lista_adjacencia[v]:
-
-        if cores[vizinho] == cor:
-            return False
-
-    return True
-
-def backtracking(v, num_cores, cores, lista_adjacencia, num_vertices):
-    if v == num_vertices :
-        return True
-    for cor in range(1, num_cores + 1):
-        if eh_seguro(v, cor, cores, lista_adjacencia):
-            cores[v] = cor
-            if backtracking(v + 1, num_cores, cores, lista_adjacencia, num_vertices):
-                return True
-            cores[v] = 0
-    return False
-
-def colorir_grafo(lista_adjacencia, num_cores):
-    num_vertices = len(lista_adjacencia)
-    cores = [0] * num_vertices
-
-    if backtracking(0, num_cores, cores, lista_adjacencia, num_vertices):
-        return cores
-    else:
-        return None
-    
-def encontrar_num_cores(lista_adjacencia):
-    num_vertices = len(lista_adjacencia)
-    for num_cores in range(1, num_vertices + 1):
-        coloracao = colorir_grafo(lista_adjacencia, num_cores)
-        if coloracao is not None:
-            return num_cores, coloracao
-    return num_vertices, None
+        num_cores, coloracao_str = encontrar_num_cores(lista_adjacencia)
     
     else:
         algoritmo = "DSatur"
         justificativa = "Para grafos maiores, o DSatur oferece excelente heuristica aproximada rodando em tempo polinomial."
 
-    def dsatur(lista_adjacencia):
+        num_cores, coloracao_str = Dsatur(lista_adjacencia, num_vertices)
 
-    num_vertices = len(lista_adjacencia)
-    cores = [0] * num_vertices
-
-    grau = {}
-    for v in lista_adjacencia:
-        grau[v] = len(lista_adjacencia[v])
-
-    saturacao = [0] * num_vertices
-
-    while 0 in cores:
-
-        nao_coloridos = []
-
-        for v in range(num_vertices):
-            if cores[v] == 0:
-                nao_coloridos.append(v)
-
-        v = max(nao_coloridos, key=lambda x: (saturacao[x], grau[x]))
-
-        cores_vizinhos = set()
-
-        for vizinho in lista_adjacencia[v]:
-            if cores[vizinho] != 0:
-                cores_vizinhos.add(cores[vizinho])
-
-        cor = 1
-        while cor in cores_vizinhos:
-            cor += 1
-
-        cores[v] = cor
-
-        # Atualiza a saturação dos vizinhos não coloridos
-        for vizinho in lista_adjacencia[v]:
-            if cores[vizinho] == 0:
-
-                cores_usadas = set()
-
-                for u in lista_adjacencia[vizinho]:
-                    if cores[u] != 0:
-                        cores_usadas.add(cores[u])
-
-                saturacao[vizinho] = len(cores_usadas)
-
-    num_cores = max(cores)
-
-    return num_cores, cores
-    
 
     # --- ESCRITA DO ARQUIVO DE SAÍDA ---
     with open(arquivo_saida, "w") as arquivo:
@@ -159,6 +116,5 @@ def encontrar_num_cores(lista_adjacencia):
         arquivo.write(f"NUM_CORES: {num_cores}\n")
         arquivo.write(f"COLORACAO: {coloracao_str}\n")
 
-# Executando para os dois arquivos da Parte 2
-processar_grafo_parte2("grafo_wifi_p.txt", "saida_parte2_p.txt")
-processar_grafo_parte2("grafo_wifi_m.txt", "saida_parte2_m.txt")
+arq_input = input("Caminho do arquivo para ser analisado: ")
+processar_grafo_parte2(arq_input, "saida_parte2_p.txt")
