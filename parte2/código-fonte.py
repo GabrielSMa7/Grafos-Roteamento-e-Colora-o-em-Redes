@@ -1,3 +1,31 @@
+def Dsatur(grafo, num_vertice):
+    cores = {v: None for v in grafo} #Atribui nenhuma cor em cada vertice do grafo
+    grau = {v: len(grafo[v]) for v in grafo} #Quantidade de vizinhos no grafo
+
+    prim_v = max(grafo, key=lambda v: grau[v])
+    cores[prim_v] = 1
+
+    for _ in range(num_vertice - 1):
+        saturacao = {}
+        for v in grafo:
+            if cores[v] == None:
+                cores_vizinhos = set(cores[vizinho] for vizinho in grafo[v] if cores[vizinho] is not None)
+                grau[v] = len(cores_vizinhos)
+            
+        prox_v = max(saturacao.keys(), key=lambda v: (saturacao[v], grau[v]))
+        cor = 1
+        while True:
+            cores_adj = any(cores[vizinho] == cor for vizinho in grafo[prox_v])
+            if not cores_adj:
+                cores[prox_v] = cor
+                break
+            cor += 1
+
+    num_cores = len(set(cores.values()))
+    
+    return num_cores, cores
+
+
 def processar_grafo_parte2(arquivo_entrada, arquivo_saida):
     with open(arquivo_entrada, "r") as arquivo:
         # Lê todas as linhas, remove espaços/quebras de linha e ignora as linhas vazias
