@@ -1,5 +1,3 @@
-import os
-
 def Dsatur(grafo, num_vertice):
     cores = {v: None for v in grafo} #Atribui nenhuma cor em cada vertice do grafo
     grau = {v: len(grafo[v]) for v in grafo} #Quantidade de vizinhos no grafo
