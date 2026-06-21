@@ -64,6 +64,8 @@ def processar_grafo_parte2(arquivo_entrada, arquivo_saida):
     else:
         algoritmo = "DSatur"
         justificativa = "Para grafos maiores, o DSatur oferece excelente heuristica aproximada rodando em tempo polinomial."
+
+        num_cores, coloracao_str = Dsatur(lista_adjacencia, num_vertices)
         
 
     # --- ESCRITA DO ARQUIVO DE SAÍDA ---
