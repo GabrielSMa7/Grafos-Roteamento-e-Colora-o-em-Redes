@@ -1,3 +1,48 @@
+import heapq
+import os
+
+
+def bellman_ford(num_vertices, arestas, origem, destino):
+    INF = float('inf')
+
+    dist = [INF] * num_vertices
+    dist[origem] = 0
+
+    anterior = [0] * num_vertices
+
+    while True:
+        existe_relaxamento = False
+
+        for j, i, v_ji in arestas:        
+            if dist[j] != INF and dist[i] > dist[j] + v_ji:
+                dist[i] = dist[j] + v_ji   
+                anterior[i] = j            
+                existe_relaxamento = True
+
+        if not existe_relaxamento:          
+            break
+
+    return dist[destino], reconstruir_caminho(anterior, origem, destino)
+
+def reconstruir_caminho(pred, origem, destino):
+    caminho = []
+    atual = destino
+
+    while atual != -1:
+        caminho.append(atual)
+        if atual == origem:
+            break
+        atual = pred[atual]
+    else:
+        return []  
+
+    caminho.reverse()
+
+    if not caminho or caminho[0] != origem:
+        return []
+
+    return caminho
+
 def processar_grafo(arquivo_entrada, arquivo_saida):
     with open(arquivo_entrada, "r") as arquivo:
         linhas = arquivo.readlines()
@@ -30,6 +75,7 @@ def processar_grafo(arquivo_entrada, arquivo_saida):
     if possui_peso_negativo:
         algoritmo = "Bellman-Ford"
         justificativa = "O grafo possui pesos negativos, portanto Bellman-Ford é o mais indicado"
+        custo, rota = bellman_ford(num_vertices, arestas, origem, destino)
     else:
         algoritmo = "Dijkstra"
         justificativa = "Todos os pesos do grafo são positivos, então Dijkstra será mais eficiente nesse caso"
@@ -38,10 +84,20 @@ def processar_grafo(arquivo_entrada, arquivo_saida):
         arquivo.write(f"ALGORITMO: {algoritmo}\n")
         arquivo.write(f"JUSTIFICATIVA: {justificativa}\n")
 
+    rota_str  = " ".join(str(v) for v in rota)
+    custo_str = str(int(custo)) if custo == int(custo) else str(custo)
+
+    with open(arquivo_saida, "w") as arquivo:
+        arquivo.write(f"ALGORITMO: {algoritmo}\n")
+        arquivo.write(f"JUSTIFICATIVA: {justificativa}\n")
+        arquivo.write(f"ROTA: {rota_str}\n")
+        arquivo.write(f"CUSTO: {custo_str}\n")
+
+BASE = os.path.dirname(os.path.abspath(__file__))
 
 processar_grafo(
-    "grafo_rede_p.txt",
-    "saida_parte1_p.txt"
+    os.path.join(BASE, "grafo_rede_m.txt"),
+    os.path.join(BASE, "saida_parte1_m.txt")
 )
 
 processar_grafo(
