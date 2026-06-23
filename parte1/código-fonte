@@ -43,6 +43,140 @@ def reconstruir_caminho(pred, origem, destino):
 
     return caminho
 
+def dijkstra(num_vertices, arestas, origem, destino):
+    grafo = [[] for _ in range(num_vertices)]
+    
+    for u, v, peso in arestas:
+        grafo[u].append((v, peso))
+
+    inf = float('inf')
+
+    dist = [inf] * num_vertices
+    dist[origem] = 0
+
+    anterior = [-1] * num_vertices
+
+    fila = [(0, origem)]
+
+    while fila:
+        dist_atual, u = heapq.heappop(fila)
+        
+        #Ignora versões antigas caso o vértice já tenha aparecido na fila
+        if dist_atual > dist[u]:
+            continue
+
+        for v, peso in grafo[u]:
+            
+            if dist[v] > dist[u] + peso:
+                dist[v] = dist[u] + peso
+                anterior[v] = u
+                heapq.heappush(fila, (dist[v], v))
+
+    return (dist[destino], reconstruir_caminho(anterior, origem, destino))
+
+def processar_grafo(arquivo_entrada, arquivo_saida):
+    with open(arquivo_entrada, "r") as arquivo:
+        linhas = arquivo.readlines()
+
+    num_vertices, num_arestas = linhas[0].split('\t')
+    num_vertices = int(num_vertices)
+    num_arestas = int(num_arestas)
+
+    origem, destino = linhas[1].split('\t')
+    origem = int(origem)
+    destino = int(destino)
+
+    arestas = []
+    possui_peso_negativo = False
+    
+    for i in range(2, num_arestas + 2):
+        linha = linhas[i]
+
+        u, v, peso = linha.split('\t')
+
+        u = int(u)
+        v = int(v)
+        peso = int(peso)
+        arestas.append((u, v, peso))
+
+        if peso < 0:
+            possui_peso_negativo = True
+
+    
+    if possui_peso_negativo:
+        algoritmo = "Bellman-Ford"
+        justificativa = "O grafo possui pesos negativos, portanto Bellman-Ford é o mais indicado"
+        custo, rota = bellman_ford(num_vertices, arestas, origem, destino)
+    else:
+        algoritmo = "Dijkstra"
+        justificativa = "Todos os pesos do grafo são positivos, então Dijkstra será mais eficiente nesse caso"
+        custo, rota = dijkstra(num_vertices, arestas, origem, destino)
+
+    rota_str  = " ".join(str(v) for v in rota)
+    custo_str = str(int(custo)) if custo == int(custo) else str(custo)
+
+    with open(arquivo_saida, "w") as arquivo:
+        arquivo.write(f"ALGORITMO: {algoritmo}\n")
+        arquivo.write(f"JUSTIFICATIVA: {justificativa}\n")
+        arquivo.write(f"ROTA: {rota_str}\n")
+        arquivo.write(f"CUSTO: {custo_str}\n")
+
+BASE = os.path.dirname(os.path.abspath(__file__))
+
+processar_grafo(
+    os.path.join(BASE, "grafo_rede_m.txt"),
+    os.path.join(BASE, "saida_parte1_m.txt")
+)
+
+processar_grafo(
+    os.path.join(BASE, "grafo_rede_p.txt"),
+    os.path.join(BASE, "saida_parte1_p.txt")
+)
+import heapq
+import os
+
+
+def bellman_ford(num_vertices, arestas, origem, destino):
+    INF = float('inf')
+
+    dist = [INF] * num_vertices
+    dist[origem] = 0
+
+    anterior = [0] * num_vertices
+
+    while True:
+        existe_relaxamento = False
+
+        for j, i, v_ji in arestas:        
+            if dist[j] != INF and dist[i] > dist[j] + v_ji:
+                dist[i] = dist[j] + v_ji   
+                anterior[i] = j            
+                existe_relaxamento = True
+
+        if not existe_relaxamento:          
+            break
+
+    return dist[destino], reconstruir_caminho(anterior, origem, destino)
+
+def reconstruir_caminho(pred, origem, destino):
+    caminho = []
+    atual = destino
+
+    while atual != -1:
+        caminho.append(atual)
+        if atual == origem:
+            break
+        atual = pred[atual]
+    else:
+        return []  
+
+    caminho.reverse()
+
+    if not caminho or caminho[0] != origem:
+        return []
+
+    return caminho
+
 def processar_grafo(arquivo_entrada, arquivo_saida):
     with open(arquivo_entrada, "r") as arquivo:
         linhas = arquivo.readlines()
