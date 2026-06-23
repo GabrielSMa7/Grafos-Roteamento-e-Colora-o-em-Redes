@@ -1,4 +1,4 @@
 ALGORITMO: Dijkstra
-JUSTIFICATIVA: Todos os pesos do grafo são positivos, então Dijkstra será mais eficiente nesse caso.
-
-#INCOMPLETO
+JUSTIFICATIVA: Todos os pesos do grafo são positivos, então Dijkstra será mais eficiente nesse caso
+ROTA: 0 1 3 4
+CUSTO: 7
