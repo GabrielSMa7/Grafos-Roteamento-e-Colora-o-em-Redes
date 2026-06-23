@@ -22,9 +22,9 @@ grafo_rede_p.txt
 grafo_rede_m.txt
 
 Cada arquivo deve seguir o formato:
-<num_vertices>    <num_arestas>
-<S>    <T>
-<vertice_u>    <vertice_v>    <custo>
+num_vertices    num_arestas
+S    T
+vertice_u    vertice_v    custo
 
 Onde S representa o vértice de origem, T representa o vértice de destino e cada linha seguinte representa uma aresta direcionada e seu custo.
 
